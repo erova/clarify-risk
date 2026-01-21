@@ -92,7 +92,7 @@ export default function UpdateContextPage({ params }: Props) {
       return;
     }
 
-    router.push(`/projects/${id}`);
+    router.push(`/dashboard/projects/${id}`);
     router.refresh();
   };
 
@@ -102,7 +102,7 @@ export default function UpdateContextPage({ params }: Props) {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Link href={`/projects/${id}`} className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-6">
+      <Link href={`/dashboard/projects/${id}`} className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-6">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to {project.name}
       </Link>
@@ -195,7 +195,7 @@ export default function UpdateContextPage({ params }: Props) {
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-              <Link href={`/projects/${id}`}>
+              <Link href={`/dashboard/projects/${id}`}>
                 <Button variant="outline" type="button">Cancel</Button>
               </Link>
               <Button type="submit" disabled={loading || !updatedByName || !whatWasBuilt}>

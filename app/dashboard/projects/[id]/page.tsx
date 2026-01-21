@@ -74,7 +74,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Context History</CardTitle>
-              <Link href={`/projects/${id}/update`}>
+              <Link href={`/dashboard/projects/${id}/update`}>
                 <Button>
                   <Plus className="w-4 h-4 mr-2" />
                   Add Update
@@ -85,7 +85,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               {typedEntries.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-500 mb-4">No context entries yet</p>
-                  <Link href={`/projects/${id}/update`}>
+                  <Link href={`/dashboard/projects/${id}/update`}>
                     <Button variant="outline">Add First Update</Button>
                   </Link>
                 </div>

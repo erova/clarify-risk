@@ -25,7 +25,7 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
           <p className="text-gray-600 mt-1">Manage your prototypes and context handoffs</p>
         </div>
-        <Link href="/projects/new">
+        <Link href="/dashboard/projects/new">
           <Button>
             <Plus className="w-4 h-4 mr-2" />
             New Project
@@ -43,7 +43,7 @@ export default async function DashboardPage() {
             <p className="text-gray-600 mb-4">
               Create your first project to start tracking prototype context
             </p>
-            <Link href="/projects/new">
+            <Link href="/dashboard/projects/new">
               <Button>Create Project</Button>
             </Link>
           </CardContent>
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {(projects as Project[]).map((project) => (
-            <Link key={project.id} href={`/projects/${project.id}`}>
+            <Link key={project.id} href={`/dashboard/projects/${project.id}`}>
               <Card className="hover:border-gray-400 transition-colors cursor-pointer h-full">
                 <CardHeader>
                   <div className="flex items-start justify-between">

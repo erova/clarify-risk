@@ -58,7 +58,7 @@ export default function NewProjectPage() {
       setError(insertError.message);
       setLoading(false);
     } else {
-      router.push(`/projects/${data.id}`);
+      router.push(`/dashboard/projects/${data.id}`);
       router.refresh();
     }
   };
