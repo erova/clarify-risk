@@ -22,11 +22,11 @@ export default async function DashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-          <p className="text-gray-600 mt-1">Manage your prototypes and context handoffs</p>
+          <h1 className="text-2xl font-bold text-white">Projects</h1>
+          <p className="text-gray-400 mt-1">Manage your prototypes and context handoffs</p>
         </div>
         <Link href="/dashboard/projects/new">
-          <Button>
+          <Button className="bg-[#C41230] hover:bg-[#a30f28] text-white border-0">
             <Plus className="w-4 h-4 mr-2" />
             New Project
           </Button>
@@ -34,17 +34,19 @@ export default async function DashboardPage() {
       </div>
 
       {!projects || projects.length === 0 ? (
-        <Card className="text-center py-12">
+        <Card className="text-center py-12 bg-white/5 border-white/10">
           <CardContent>
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-8 h-8 text-gray-400" />
+            <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Plus className="w-8 h-8 text-gray-500" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No projects yet</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-lg font-semibold text-white mb-2">No projects yet</h3>
+            <p className="text-gray-400 mb-4">
               Create your first project to start tracking prototype context
             </p>
             <Link href="/dashboard/projects/new">
-              <Button>Create Project</Button>
+              <Button className="bg-[#C41230] hover:bg-[#a30f28] text-white border-0">
+                Create Project
+              </Button>
             </Link>
           </CardContent>
         </Card>
@@ -52,13 +54,15 @@ export default async function DashboardPage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {(projects as Project[]).map((project) => (
             <Link key={project.id} href={`/dashboard/projects/${project.id}`}>
-              <Card className="hover:border-gray-400 transition-colors cursor-pointer h-full">
+              <Card className="bg-white/5 border-white/10 hover:border-white/20 transition-colors cursor-pointer h-full">
                 <CardHeader>
                   <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">{project.name}</CardTitle>
-                    <Badge variant="secondary">v{project.current_version}</Badge>
+                    <CardTitle className="text-lg text-white">{project.name}</CardTitle>
+                    <Badge variant="secondary" className="bg-white/10 text-gray-300">
+                      v{project.current_version}
+                    </Badge>
                   </div>
-                  <CardDescription className="line-clamp-2">
+                  <CardDescription className="line-clamp-2 text-gray-400">
                     {project.description || "No description"}
                   </CardDescription>
                 </CardHeader>

@@ -123,3 +123,78 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Diligent underwater caustic animations */
+@keyframes caustic-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(30px, 20px) scale(1.05);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate(-20px, 40px) scale(0.95);
+    opacity: 0.25;
+  }
+  75% {
+    transform: translate(10px, -10px) scale(1.02);
+    opacity: 0.32;
+  }
+}
+
+@keyframes caustic-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.25;
+  }
+  33% {
+    transform: translate(-40px, 30px) scale(1.08);
+    opacity: 0.3;
+  }
+  66% {
+    transform: translate(20px, -20px) scale(0.92);
+    opacity: 0.2;
+  }
+}
+
+@keyframes caustic-3 {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.1);
+    opacity: 0.28;
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.15;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.22;
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+.animate-caustic-1 {
+  animation: caustic-1 12s ease-in-out infinite;
+}
+
+.animate-caustic-2 {
+  animation: caustic-2 15s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+.animate-caustic-3 {
+  animation: caustic-3 8s ease-in-out infinite;
+  animation-delay: -2s;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 10s ease-in-out infinite;
+}
