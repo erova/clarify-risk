@@ -45,6 +45,11 @@ export default function LandingPage() {
                 Browse Prototypes
               </Button>
             </Link>
+            <Link href="/resources">
+              <Button variant="ghost" size="lg" className="text-lg px-8">
+                Get the Kit
+              </Button>
+            </Link>
           </div>
         </div>
 

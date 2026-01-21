@@ -28,6 +28,9 @@ export default async function PrototypesIndexPage() {
             <span className="text-gray-300">|</span>
             <span className="text-gray-600">Prototypes</span>
           </div>
+          <Link href="/resources">
+            <Button variant="ghost" size="sm">Get the Kit</Button>
+          </Link>
           <Link href="/login">
             <Button variant="outline" size="sm">Sign in</Button>
           </Link>
