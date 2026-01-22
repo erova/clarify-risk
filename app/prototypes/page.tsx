@@ -53,31 +53,48 @@ export default async function PrototypesIndexPage() {
           </Card>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(projects as Project[]).map((project) => (
-              <Card key={project.id} className="bg-white/5 border-white/10 hover:border-white/20 transition-colors">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg text-white">{project.name}</CardTitle>
-                    <Badge variant="secondary" className="bg-white/10 text-gray-300">
-                      v{project.current_version}
-                    </Badge>
-                  </div>
-                  <CardDescription className="line-clamp-2 text-gray-400">
-                    {project.description || "No description"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-2">
-                    <Link href={`/prototypes/${project.slug}`} className="flex-1">
-                      <Button className="w-full bg-[#3b82f6] hover:bg-[#2563eb] text-white border-0">
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        View Prototype
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {(projects as Project[]).map((project) => {
+              const prototypeUrl = project.external_url || `/prototypes/${project.slug}`;
+              const isExternal = !!project.external_url;
+              
+              return (
+                <Card key={project.id} className="bg-white/5 border-white/10 hover:border-white/20 transition-colors">
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-lg text-white">{project.name}</CardTitle>
+                      <div className="flex gap-1.5 flex-shrink-0">
+                        {isExternal && (
+                          <Badge variant="outline" className="border-[#3b82f6]/50 text-[#60a5fa] text-xs">
+                            External
+                          </Badge>
+                        )}
+                        <Badge variant="secondary" className="bg-white/10 text-gray-300">
+                          v{project.current_version}
+                        </Badge>
+                      </div>
+                    </div>
+                    <CardDescription className="line-clamp-2 text-gray-400">
+                      {project.description || "No description"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-2">
+                      <a 
+                        href={prototypeUrl} 
+                        target={isExternal ? "_blank" : undefined}
+                        rel={isExternal ? "noopener noreferrer" : undefined}
+                        className="flex-1"
+                      >
+                        <Button className="w-full bg-[#3b82f6] hover:bg-[#2563eb] text-white border-0">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          View Prototype
+                        </Button>
+                      </a>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </main>

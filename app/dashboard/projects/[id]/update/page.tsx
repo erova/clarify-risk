@@ -97,20 +97,20 @@ export default function UpdateContextPage({ params }: Props) {
   };
 
   if (!project) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <div className="text-center py-12 text-gray-400">Loading...</div>;
   }
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Link href={`/dashboard/projects/${id}`} className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-6">
+      <Link href={`/dashboard/projects/${id}`} className="inline-flex items-center text-sm text-gray-400 hover:text-white mb-6">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to {project.name}
       </Link>
 
-      <Card>
+      <Card className="bg-white/5 border-white/10">
         <CardHeader>
-          <CardTitle>Add Context Update</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-white">Add Context Update</CardTitle>
+          <CardDescription className="text-gray-400">
             Document what you built so the next person (or Claude) can pick up where you left off.
             This will increment the version to v{incrementVersion(project.current_version)}.
           </CardDescription>
@@ -118,24 +118,25 @@ export default function UpdateContextPage({ params }: Props) {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
             {error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+              <div className="p-3 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md">
                 {error}
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="name">Your Name</Label>
+              <Label htmlFor="name" className="text-gray-300">Your Name</Label>
               <Input
                 id="name"
                 placeholder="Who worked on this?"
                 value={updatedByName}
                 onChange={(e) => setUpdatedByName(e.target.value)}
                 required
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="what">What was built? *</Label>
+              <Label htmlFor="what" className="text-gray-300">What was built? *</Label>
               <Textarea
                 id="what"
                 placeholder="Describe what you added, changed, or completed"
@@ -143,51 +144,55 @@ export default function UpdateContextPage({ params }: Props) {
                 onChange={(e) => setWhatWasBuilt(e.target.value)}
                 required
                 rows={3}
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="decisions">Decisions made</Label>
+              <Label htmlFor="decisions" className="text-gray-300">Decisions made</Label>
               <Textarea
                 id="decisions"
                 placeholder="Any design decisions, tradeoffs, or reasoning worth noting"
                 value={decisionsMade}
                 onChange={(e) => setDecisionsMade(e.target.value)}
                 rows={2}
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="issues">Known issues</Label>
+              <Label htmlFor="issues" className="text-gray-300">Known issues</Label>
               <Textarea
                 id="issues"
                 placeholder="Bugs, incomplete features, or things that need attention"
                 value={knownIssues}
                 onChange={(e) => setKnownIssues(e.target.value)}
                 rows={2}
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="next">Next steps</Label>
+              <Label htmlFor="next" className="text-gray-300">Next steps</Label>
               <Textarea
                 id="next"
                 placeholder="What should the next person work on?"
                 value={nextSteps}
                 onChange={(e) => setNextSteps(e.target.value)}
                 rows={2}
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="ai">AI Handoff Notes</Label>
+              <Label htmlFor="ai" className="text-gray-300">AI Handoff Notes</Label>
               <Textarea
                 id="ai"
                 placeholder="Technical notes for Claude: patterns used, gotchas, file structure, etc."
                 value={aiHandoffNotes}
                 onChange={(e) => setAiHandoffNotes(e.target.value)}
                 rows={3}
-                className="font-mono text-sm"
+                className="font-mono text-sm bg-white/5 border-white/10 text-white placeholder:text-gray-500"
               />
               <p className="text-xs text-gray-500">
                 These notes help Claude understand the codebase when continuing your work
@@ -196,9 +201,15 @@ export default function UpdateContextPage({ params }: Props) {
 
             <div className="flex justify-end gap-3 pt-4">
               <Link href={`/dashboard/projects/${id}`}>
-                <Button variant="outline" type="button">Cancel</Button>
+                <Button variant="outline" type="button" className="border-white/20 text-white hover:bg-white/10">
+                  Cancel
+                </Button>
               </Link>
-              <Button type="submit" disabled={loading || !updatedByName || !whatWasBuilt}>
+              <Button 
+                type="submit" 
+                disabled={loading || !updatedByName || !whatWasBuilt}
+                className="bg-[#3b82f6] hover:bg-[#2563eb] text-white"
+              >
                 {loading ? "Saving..." : "Save Update"}
               </Button>
             </div>

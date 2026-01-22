@@ -3,6 +3,7 @@ export interface Project {
   name: string;
   slug: string;
   description: string | null;
+  external_url: string | null;
   current_version: string;
   created_by: string | null;
   created_at: string;

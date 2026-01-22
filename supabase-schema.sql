@@ -10,11 +10,15 @@ CREATE TABLE projects (
   name TEXT NOT NULL,
   slug TEXT UNIQUE NOT NULL,
   description TEXT,
+  external_url TEXT,  -- Optional: link to externally hosted prototype
   current_version TEXT DEFAULT '0.1',
   created_by UUID REFERENCES auth.users(id),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration for existing tables:
+-- ALTER TABLE projects ADD COLUMN external_url TEXT;
 
 -- Context entries (handoff history)
 CREATE TABLE context_entries (
