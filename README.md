@@ -1,4 +1,4 @@
-# Clarify Risk - Prototype Hub
+# Vibe Sharing Prototype Hub
 
 Host and share AI-generated prototypes with seamless context handoffs.
 
@@ -50,7 +50,7 @@ Open [http://localhost:3000](http://localhost:3000)
 ## Project Structure
 
 ```
-clarify-risk/
+vibesharing/
 ├── app/
 │   ├── (auth)/           # Login/signup pages
 │   ├── (dashboard)/      # Protected dashboard routes
