@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Download, FileCode, Zap, BookOpen, ArrowRight, ExternalLink } from "lucide-react";
-import { DiligentLogo } from "@/components/DiligentLogo";
+import { ProtoHubLogo } from "@/components/ProtoHubLogo";
 
 const EXAMPLE_PROMPTS = [
   {
@@ -62,7 +62,7 @@ export default function ResourcesPage() {
       <header className="border-b border-white/10 bg-black/20 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <DiligentLogo />
+            <ProtoHubLogo />
             <span className="text-gray-600">|</span>
             <span className="text-gray-400">Resources</span>
           </div>
@@ -84,7 +84,7 @@ export default function ResourcesPage() {
       <main className="max-w-6xl mx-auto px-4 py-12">
         {/* Hero */}
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-[#C41230]/20 text-[#ff6b7a] border-[#C41230]/30">
+          <Badge className="mb-4 bg-[#3b82f6]/20 text-[#60a5fa] border-[#3b82f6]/30">
             For Designers & AI Tools
           </Badge>
           <h1 className="text-4xl font-bold text-white mb-4">
@@ -98,12 +98,12 @@ export default function ResourcesPage() {
 
         {/* Download Section */}
         <section className="mb-16">
-          <Card className="bg-gradient-to-br from-[#C41230]/20 to-[#8B001E]/10 border-[#C41230]/30">
+          <Card className="bg-gradient-to-br from-[#3b82f6]/20 to-[#8B001E]/10 border-[#3b82f6]/30">
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-[#C41230]/30 rounded-xl flex items-center justify-center">
-                    <FileCode className="w-8 h-8 text-[#ff6b7a]" />
+                  <div className="w-16 h-16 bg-[#3b82f6]/30 rounded-xl flex items-center justify-center">
+                    <FileCode className="w-8 h-8 text-[#60a5fa]" />
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold mb-1 text-white">Wireframe Kit</h2>
@@ -113,7 +113,7 @@ export default function ResourcesPage() {
                   </div>
                 </div>
                 <a href="/wireframe-kit.zip" download>
-                  <Button size="lg" className="gap-2 bg-[#C41230] hover:bg-[#a30f28] text-white">
+                  <Button size="lg" className="gap-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white">
                     <Download className="w-5 h-5" />
                     Download .zip
                   </Button>
@@ -129,8 +129,8 @@ export default function ResourcesPage() {
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="bg-white/5 border-white/10">
               <CardHeader>
-                <div className="w-10 h-10 bg-[#C41230]/20 rounded-lg flex items-center justify-center mb-2">
-                  <span className="font-bold text-[#ff6b7a]">1</span>
+                <div className="w-10 h-10 bg-[#3b82f6]/20 rounded-lg flex items-center justify-center mb-2">
+                  <span className="font-bold text-[#60a5fa]">1</span>
                 </div>
                 <CardTitle className="text-lg text-white">Download & Extract</CardTitle>
               </CardHeader>
@@ -143,8 +143,8 @@ export default function ResourcesPage() {
 
             <Card className="bg-white/5 border-white/10">
               <CardHeader>
-                <div className="w-10 h-10 bg-[#C41230]/20 rounded-lg flex items-center justify-center mb-2">
-                  <span className="font-bold text-[#ff6b7a]">2</span>
+                <div className="w-10 h-10 bg-[#3b82f6]/20 rounded-lg flex items-center justify-center mb-2">
+                  <span className="font-bold text-[#60a5fa]">2</span>
                 </div>
                 <CardTitle className="text-lg text-white">Install & Run</CardTitle>
               </CardHeader>
@@ -160,8 +160,8 @@ export default function ResourcesPage() {
 
             <Card className="bg-white/5 border-white/10">
               <CardHeader>
-                <div className="w-10 h-10 bg-[#C41230]/20 rounded-lg flex items-center justify-center mb-2">
-                  <span className="font-bold text-[#ff6b7a]">3</span>
+                <div className="w-10 h-10 bg-[#3b82f6]/20 rounded-lg flex items-center justify-center mb-2">
+                  <span className="font-bold text-[#60a5fa]">3</span>
                 </div>
                 <CardTitle className="text-lg text-white">Prompt Claude</CardTitle>
               </CardHeader>
@@ -181,7 +181,7 @@ export default function ResourcesPage() {
             <Card className="bg-white/5 border-white/10">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2 text-white">
-                  <Zap className="w-5 h-5 text-[#C41230]" />
+                  <Zap className="w-5 h-5 text-[#3b82f6]" />
                   Wireframe Primitives
                 </CardTitle>
               </CardHeader>
@@ -201,7 +201,7 @@ export default function ResourcesPage() {
             <Card className="bg-white/5 border-white/10">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2 text-white">
-                  <BookOpen className="w-5 h-5 text-[#C41230]" />
+                  <BookOpen className="w-5 h-5 text-[#3b82f6]" />
                   Example Experiments
                 </CardTitle>
               </CardHeader>
@@ -274,7 +274,7 @@ export default function ResourcesPage() {
                       <CardDescription className="text-gray-400">{example.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <span className="text-sm text-[#ff6b7a] flex items-center gap-1">
+                      <span className="text-sm text-[#60a5fa] flex items-center gap-1">
                         View prototype <ExternalLink className="w-3 h-3" />
                       </span>
                     </CardContent>
@@ -295,7 +295,7 @@ export default function ResourcesPage() {
               </p>
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 <a href="/wireframe-kit.zip" download>
-                  <Button size="lg" className="gap-2 bg-[#C41230] hover:bg-[#a30f28] text-white">
+                  <Button size="lg" className="gap-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white">
                     <Download className="w-5 h-5" />
                     Download Wireframe Kit
                   </Button>

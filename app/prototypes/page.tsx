@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
-import { DiligentLogo } from "@/components/DiligentLogo";
+import { ProtoHubLogo } from "@/components/ProtoHubLogo";
 import type { Project } from "@/types";
 
 export default async function PrototypesIndexPage() {
@@ -20,7 +20,7 @@ export default async function PrototypesIndexPage() {
       <header className="border-b border-white/10 bg-black/20 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <DiligentLogo />
+            <ProtoHubLogo />
             <span className="text-gray-600">|</span>
             <span className="text-gray-400">Prototypes</span>
           </div>
@@ -69,7 +69,7 @@ export default async function PrototypesIndexPage() {
                 <CardContent>
                   <div className="flex items-center gap-2">
                     <Link href={`/prototypes/${project.slug}`} className="flex-1">
-                      <Button className="w-full bg-[#C41230] hover:bg-[#a30f28] text-white border-0">
+                      <Button className="w-full bg-[#3b82f6] hover:bg-[#2563eb] text-white border-0">
                         <ExternalLink className="w-4 h-4 mr-2" />
                         View Prototype
                       </Button>

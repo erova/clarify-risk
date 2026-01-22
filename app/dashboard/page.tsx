@@ -26,7 +26,7 @@ export default async function DashboardPage() {
           <p className="text-gray-400 mt-1">Manage your prototypes and context handoffs</p>
         </div>
         <Link href="/dashboard/projects/new">
-          <Button className="bg-[#C41230] hover:bg-[#a30f28] text-white border-0">
+          <Button className="bg-[#3b82f6] hover:bg-[#2563eb] text-white border-0">
             <Plus className="w-4 h-4 mr-2" />
             New Project
           </Button>
@@ -44,7 +44,7 @@ export default async function DashboardPage() {
               Create your first project to start tracking prototype context
             </p>
             <Link href="/dashboard/projects/new">
-              <Button className="bg-[#C41230] hover:bg-[#a30f28] text-white border-0">
+              <Button className="bg-[#3b82f6] hover:bg-[#2563eb] text-white border-0">
                 Create Project
               </Button>
             </Link>

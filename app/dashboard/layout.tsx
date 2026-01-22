@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { DiligentLogo } from "@/components/DiligentLogo";
+import { ProtoHubLogo } from "@/components/ProtoHubLogo";
 
 export default async function DashboardLayout({
   children,
@@ -22,7 +22,7 @@ export default async function DashboardLayout({
       <header className="border-b border-white/10 bg-black/20 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <DiligentLogo href="/dashboard" />
+            <ProtoHubLogo href="/dashboard" />
             <nav className="flex items-center gap-4">
               <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white transition-colors">
                 Projects

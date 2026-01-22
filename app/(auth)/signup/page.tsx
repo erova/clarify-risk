@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { DiligentLogo } from "@/components/DiligentLogo";
+import { ProtoHubLogo } from "@/components/ProtoHubLogo";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -46,7 +46,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative">
       <div className="absolute top-6 left-6">
-        <DiligentLogo />
+        <ProtoHubLogo />
       </div>
       
       <Card className="w-full max-w-md bg-white/5 border-white/10 backdrop-blur-sm">
@@ -72,7 +72,7 @@ export default function SignupPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-[#C41230] focus:ring-[#C41230]"
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
               />
             </div>
             <div className="space-y-2">
@@ -84,7 +84,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-[#C41230] focus:ring-[#C41230]"
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
               />
             </div>
             <div className="space-y-2">
@@ -97,21 +97,21 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-[#C41230] focus:ring-[#C41230]"
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button 
               type="submit" 
-              className="w-full bg-[#C41230] hover:bg-[#a30f28] text-white border-0" 
+              className="w-full bg-[#3b82f6] hover:bg-[#2563eb] text-white border-0" 
               disabled={loading}
             >
               {loading ? "Creating account..." : "Create account"}
             </Button>
             <p className="text-sm text-gray-400 text-center">
               Already have an account?{" "}
-              <Link href="/login" className="text-[#ff6b7a] hover:underline">
+              <Link href="/login" className="text-[#60a5fa] hover:underline">
                 Sign in
               </Link>
             </p>

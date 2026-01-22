@@ -1,20 +1,20 @@
 "use client";
 
 /**
- * Animated background with Diligent red tint
+ * Animated background with blue tint
  * Creates an underwater caustic light effect
  */
-export function DiligentBackground() {
+export function ProtoHubBackground() {
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden bg-[#0a0a0c]">
       {/* Base gradient layer */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0c] via-[#12080a] to-[#0a0a0c]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0c] via-[#080a12] to-[#0a0a0c]" />
       
       {/* Primary caustic light - large, slow movement */}
       <div 
         className="absolute w-[800px] h-[800px] rounded-full opacity-30 blur-[120px] animate-caustic-1"
         style={{
-          background: 'radial-gradient(circle, rgba(196, 18, 48, 0.6) 0%, rgba(196, 18, 48, 0.2) 40%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(59, 130, 246, 0.6) 0%, rgba(59, 130, 246, 0.2) 40%, transparent 70%)',
           top: '-20%',
           left: '30%',
         }}
@@ -24,7 +24,7 @@ export function DiligentBackground() {
       <div 
         className="absolute w-[600px] h-[600px] rounded-full opacity-25 blur-[100px] animate-caustic-2"
         style={{
-          background: 'radial-gradient(circle, rgba(220, 38, 68, 0.5) 0%, rgba(180, 20, 40, 0.15) 50%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(96, 165, 250, 0.5) 0%, rgba(37, 99, 235, 0.15) 50%, transparent 70%)',
           top: '-10%',
           right: '20%',
         }}
@@ -34,7 +34,7 @@ export function DiligentBackground() {
       <div 
         className="absolute w-[500px] h-[500px] rounded-full opacity-20 blur-[80px] animate-caustic-3"
         style={{
-          background: 'radial-gradient(circle, rgba(255, 60, 90, 0.4) 0%, rgba(196, 18, 48, 0.1) 50%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(147, 197, 253, 0.4) 0%, rgba(59, 130, 246, 0.1) 50%, transparent 70%)',
           top: '5%',
           left: '50%',
           transform: 'translateX(-50%)',
@@ -45,7 +45,7 @@ export function DiligentBackground() {
       <div 
         className="absolute w-[1200px] h-[600px] rounded-full opacity-15 blur-[150px] animate-pulse-slow"
         style={{
-          background: 'radial-gradient(ellipse, rgba(139, 0, 30, 0.5) 0%, transparent 60%)',
+          background: 'radial-gradient(ellipse, rgba(29, 78, 216, 0.5) 0%, transparent 60%)',
           top: '-30%',
           left: '50%',
           transform: 'translateX(-50%)',
