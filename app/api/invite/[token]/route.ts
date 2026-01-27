@@ -9,16 +9,10 @@ export async function GET(
   const { token } = await params;
   const supabase = await createClient();
 
+  // Get the invite
   const { data: invite, error } = await supabase
     .from("pending_invites")
-    .select(`
-      id,
-      email,
-      role,
-      expires_at,
-      accepted_at,
-      organization:organizations(id, name, slug)
-    `)
+    .select("id, email, role, org_id, expires_at, accepted_at")
     .eq("token", token)
     .single();
 
@@ -34,10 +28,17 @@ export async function GET(
     return NextResponse.json({ error: "This invite has expired" }, { status: 400 });
   }
 
+  // Get the organization separately
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id, name, slug")
+    .eq("id", invite.org_id)
+    .single();
+
   return NextResponse.json({
     email: invite.email,
     role: invite.role,
-    organization: invite.organization,
+    organization: org || { id: invite.org_id, name: "Organization", slug: "" },
   });
 }
 
