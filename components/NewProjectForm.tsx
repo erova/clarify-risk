@@ -8,13 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ExternalLink, Folder, ChevronDown } from "lucide-react";
+import { ArrowLeft, ExternalLink, Folder, ChevronDown, GitFork } from "lucide-react";
 import Link from "next/link";
-import type { Folder as FolderType } from "@/types";
+import type { Folder as FolderType, Project } from "@/types";
 
 interface NewProjectFormProps {
   folders: FolderType[];
   defaultFolderId: string | null;
+  parentProject?: Project | null;
 }
 
 // Build a flat list with indentation for nested folders
@@ -40,7 +41,7 @@ function buildFolderOptions(folders: FolderType[]): { id: string; name: string; 
   return result;
 }
 
-export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps) {
+export function NewProjectForm({ folders, defaultFolderId, parentProject }: NewProjectFormProps) {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
@@ -51,6 +52,7 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
   const router = useRouter();
   const supabase = createClient();
 
+  const isPrototype = !!parentProject;
   const isExternal = externalUrl.trim().length > 0;
   const folderOptions = buildFolderOptions(folders);
   const selectedFolder = folders.find((f) => f.id === folderId);
@@ -85,7 +87,8 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
         slug,
         description: description || null,
         external_url: externalUrl.trim() || null,
-        folder_id: folderId,
+        folder_id: isPrototype ? parentProject.folder_id : folderId,
+        parent_project_id: parentProject?.id || null,
         created_by: user.id,
       })
       .select()
@@ -93,7 +96,7 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
 
     if (insertError) {
       if (insertError.code === "23505") {
-        setError("A project with this slug already exists in this folder");
+        setError(`A ${isPrototype ? "prototype" : "project"} with this slug already exists`);
       } else {
         setError(insertError.message);
       }
@@ -104,20 +107,36 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
     }
   };
 
-  const backUrl = folderId ? `/dashboard/folders/${folderId}` : "/dashboard";
+  const backUrl = isPrototype 
+    ? `/dashboard/projects/${parentProject.id}`
+    : folderId 
+      ? `/dashboard/folders/${folderId}` 
+      : "/dashboard";
+
+  const backLabel = isPrototype 
+    ? `Back to ${parentProject.name}`
+    : selectedFolder 
+      ? selectedFolder.name 
+      : "projects";
 
   return (
     <div className="max-w-2xl mx-auto">
       <Link href={backUrl} className="inline-flex items-center text-sm text-gray-400 hover:text-white mb-6">
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to {selectedFolder ? selectedFolder.name : "projects"}
+        Back to {backLabel}
       </Link>
 
       <Card className="bg-white/5 border-white/10">
         <CardHeader>
-          <CardTitle className="text-white">Create New Project</CardTitle>
+          <CardTitle className="text-white flex items-center gap-2">
+            {isPrototype && <GitFork className="w-5 h-5 text-purple-400" />}
+            Create New {isPrototype ? "Prototype" : "Project"}
+          </CardTitle>
           <CardDescription className="text-gray-400">
-            Set up a new project to track your prototype and context handoffs
+            {isPrototype 
+              ? `Add a new prototype version to "${parentProject.name}"`
+              : "Set up a new project to track your prototype and context handoffs"
+            }
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -128,8 +147,17 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
               </div>
             )}
 
-            {/* Folder selector */}
-            {folders.length > 0 && (
+            {/* Parent project indicator (for prototypes) */}
+            {isPrototype && (
+              <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-md">
+                <p className="text-sm text-purple-300">
+                  <span className="font-medium">Parent Project:</span> {parentProject.name}
+                </p>
+              </div>
+            )}
+
+            {/* Folder selector - only show for new Projects, not Prototypes */}
+            {!isPrototype && folders.length > 0 && (
               <div className="space-y-2">
                 <Label htmlFor="folder" className="text-gray-300 flex items-center gap-2">
                   <Folder className="w-4 h-4" />
@@ -162,10 +190,12 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-gray-300">Project Name</Label>
+              <Label htmlFor="name" className="text-gray-300">
+                {isPrototype ? "Prototype Name" : "Project Name"}
+              </Label>
               <Input
                 id="name"
-                placeholder="e.g., Agentic Hero"
+                placeholder={isPrototype ? "e.g., Chris's Light Mode v4" : "e.g., Steady State Vision"}
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 required
@@ -179,7 +209,7 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
                 <span className="text-sm text-gray-500">/prototypes/</span>
                 <Input
                   id="slug"
-                  placeholder="agentic-hero"
+                  placeholder={isPrototype ? "chris-light-mode-v4" : "steady-state-vision"}
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   required
@@ -198,7 +228,7 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
             <div className="space-y-2">
               <Label htmlFor="external" className="text-gray-300 flex items-center gap-2">
                 <ExternalLink className="w-4 h-4" />
-                External Prototype URL (optional)
+                External URL {isPrototype ? "" : "(optional)"}
               </Label>
               <Input
                 id="external"
@@ -209,7 +239,10 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
                 className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
               />
               <p className="text-xs text-gray-500">
-                Host your prototype on your own GitHub/Vercel. Leave blank to host on this site.
+                {isPrototype 
+                  ? "Where is this prototype hosted? (Vercel, Netlify, etc.)"
+                  : "Host your prototype on your own GitHub/Vercel. Leave blank to host on this site."
+                }
               </p>
             </div>
 
@@ -217,7 +250,10 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
               <Label htmlFor="description" className="text-gray-300">Description (optional)</Label>
               <Textarea
                 id="description"
-                placeholder="What is this prototype about?"
+                placeholder={isPrototype 
+                  ? "What's different in this version?" 
+                  : "What is this project about?"
+                }
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
@@ -236,7 +272,7 @@ export function NewProjectForm({ folders, defaultFolderId }: NewProjectFormProps
                 disabled={loading || !name || !slug}
                 className="bg-[#3b82f6] hover:bg-[#2563eb] text-white"
               >
-                {loading ? "Creating..." : "Create Project"}
+                {loading ? "Creating..." : `Create ${isPrototype ? "Prototype" : "Project"}`}
               </Button>
             </div>
           </CardContent>

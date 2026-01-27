@@ -67,12 +67,13 @@ export interface FolderWithAccess extends Folder {
 }
 
 // ============================================================================
-// PROJECTS
+// PROJECTS & PROTOTYPES
 // ============================================================================
 
 export interface Project {
   id: string;
   folder_id: string | null;
+  parent_project_id: string | null;  // If set, this is a "Prototype" under a parent "Project"
   name: string;
   slug: string;
   description: string | null;
@@ -81,6 +82,13 @@ export interface Project {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+}
+
+// Helper type: A Project with no parent is a "Project", with a parent is a "Prototype"
+export type ProjectType = 'project' | 'prototype';
+
+export function getProjectType(project: Project): ProjectType {
+  return project.parent_project_id ? 'prototype' : 'project';
 }
 
 export interface ContextEntry {
@@ -102,6 +110,14 @@ export interface ProjectWithEntries extends Project {
 
 export interface ProjectWithFolder extends Project {
   folder: Folder | null;
+}
+
+export interface ProjectWithPrototypes extends Project {
+  prototypes: Project[];  // Child prototypes
+}
+
+export interface PrototypeWithParent extends Project {
+  parent_project: Project | null;
 }
 
 // ============================================================================

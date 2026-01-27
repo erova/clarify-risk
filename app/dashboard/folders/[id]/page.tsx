@@ -45,16 +45,32 @@ export default async function FolderPage({ params }: Props) {
     .eq("org_id", currentOrg.id)
     .order("name");
 
-  // Get projects in this folder
+  // Get projects in this folder (only parent projects, not prototypes)
   const { data: projects, error: projectsError } = await supabase
     .from("projects")
     .select("*")
     .eq("folder_id", id)
+    .is("parent_project_id", null)  // Only show Projects, not Prototypes
     .order("updated_at", { ascending: false });
 
   if (projectsError) {
     console.error("Error fetching projects:", projectsError);
   }
+
+  // Get prototype counts for each project
+  const projectIds = projects?.map((p: Project) => p.id) || [];
+  const { data: prototypeCounts } = projectIds.length > 0 
+    ? await supabase
+        .from("projects")
+        .select("parent_project_id")
+        .in("parent_project_id", projectIds)
+    : { data: [] };
+  
+  const prototypeCountMap = new Map<string, number>();
+  prototypeCounts?.forEach((p: { parent_project_id: string }) => {
+    const count = prototypeCountMap.get(p.parent_project_id) || 0;
+    prototypeCountMap.set(p.parent_project_id, count + 1);
+  });
 
   // Get subfolders
   const { data: subfolders } = await supabase
@@ -198,31 +214,36 @@ export default async function FolderPage({ params }: Props) {
           </Card>
         ) : (
           <div className="grid md:grid-cols-2 gap-4">
-            {(projects as Project[]).map((project) => (
-              <Link key={project.id} href={`/dashboard/projects/${project.id}`}>
-                <Card className="bg-white/5 border-white/10 hover:border-white/20 transition-colors cursor-pointer h-full">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <CardTitle className="text-lg text-white">{project.name}</CardTitle>
-                      <Badge variant="secondary" className="bg-white/10 text-gray-300">
-                        v{project.current_version}
-                      </Badge>
-                    </div>
-                    <CardDescription className="line-clamp-2 text-gray-400">
-                      {project.description || "No description"}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <span>/{project.slug}</span>
-                      <span>
-                        {new Date(project.updated_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+            {(projects as Project[]).map((project) => {
+              const protoCount = prototypeCountMap.get(project.id) || 0;
+              return (
+                <Link key={project.id} href={`/dashboard/projects/${project.id}`}>
+                  <Card className="bg-white/5 border-white/10 hover:border-white/20 transition-colors cursor-pointer h-full">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <CardTitle className="text-lg text-white">{project.name}</CardTitle>
+                        {protoCount > 0 && (
+                          <Badge variant="secondary" className="bg-[#3b82f6]/20 text-[#60a5fa]">
+                            {protoCount} prototype{protoCount !== 1 ? "s" : ""}
+                          </Badge>
+                        )}
+                      </div>
+                      <CardDescription className="line-clamp-2 text-gray-400">
+                        {project.description || "No description"}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <span>/{project.slug}</span>
+                        <span>
+                          {new Date(project.updated_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
