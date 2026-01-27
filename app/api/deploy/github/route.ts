@@ -21,14 +21,30 @@ async function fetchRepoFiles(
   path: string = ""
 ): Promise<VercelFile[]> {
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-  const res = await fetch(url, {
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-      "User-Agent": "Proto-Hub",
-    },
-  });
+  
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github.v3+json",
+    "User-Agent": "Proto-Hub",
+  };
+  
+  // Use GitHub token if available (increases rate limit from 60 to 5000/hr)
+  const githubToken = process.env.GITHUB_TOKEN;
+  if (githubToken) {
+    headers.Authorization = `Bearer ${githubToken}`;
+  }
+  
+  const res = await fetch(url, { headers });
 
   if (!res.ok) {
+    if (res.status === 403) {
+      const remaining = res.headers.get("x-ratelimit-remaining");
+      if (remaining === "0") {
+        throw new Error("GitHub API rate limit exceeded. Please add a GITHUB_TOKEN environment variable.");
+      }
+    }
+    if (res.status === 404) {
+      throw new Error("Repository not found. Make sure it's a public repo and the URL is correct.");
+    }
     throw new Error(`GitHub API error: ${res.status} ${res.statusText}`);
   }
 
@@ -52,7 +68,13 @@ async function fetchRepoFiles(
       files.push(...subFiles);
     } else if (item.type === "file" && item.download_url) {
       // Fetch file content
-      const fileRes = await fetch(item.download_url);
+      const fileHeaders: Record<string, string> = { "User-Agent": "Proto-Hub" };
+      const githubToken = process.env.GITHUB_TOKEN;
+      if (githubToken) {
+        fileHeaders.Authorization = `Bearer ${githubToken}`;
+      }
+      
+      const fileRes = await fetch(item.download_url, { headers: fileHeaders });
       if (fileRes.ok) {
         const content = await fileRes.arrayBuffer();
         const base64 = Buffer.from(content).toString("base64");
