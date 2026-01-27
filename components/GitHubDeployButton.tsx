@@ -51,10 +51,13 @@ export function GitHubDeployButton({ prototypeId, prototypeName, onDeployed }: G
 
       setDeployedUrl(data.deployedUrl);
       onDeployed?.(data.deployedUrl);
-      router.refresh();
+      
+      // Small delay before refresh to ensure DB update is complete
+      setTimeout(() => {
+        router.refresh();
+      }, 500);
     } catch (err) {
       setError("Network error. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
@@ -62,21 +65,21 @@ export function GitHubDeployButton({ prototypeId, prototypeName, onDeployed }: G
   if (deployedUrl) {
     return (
       <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-        <div className="flex items-center gap-2 text-green-400 mb-2">
+        <div className="flex items-center gap-2 text-green-400 mb-3">
           <Check className="w-5 h-5" />
-          <span className="font-medium">Deployed!</span>
+          <span className="font-medium">Deployed successfully!</span>
         </div>
         <a 
           href={deployedUrl} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-[#60a5fa] hover:underline flex items-center gap-1 text-sm"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#10b981] hover:bg-[#059669] text-white rounded-md transition-colors text-sm font-medium"
         >
-          {deployedUrl}
-          <ExternalLink className="w-3 h-3" />
+          <ExternalLink className="w-4 h-4" />
+          View Live Prototype
         </a>
-        <p className="text-xs text-gray-500 mt-2">
-          It may take a minute for the deployment to go live.
+        <p className="text-xs text-gray-500 mt-3">
+          {deployedUrl}
         </p>
       </div>
     );
@@ -142,7 +145,7 @@ export function GitHubDeployButton({ prototypeId, prototypeName, onDeployed }: G
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Deploying...
+              Fetching & Deploying...
             </>
           ) : (
             "Deploy"

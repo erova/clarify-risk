@@ -105,7 +105,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         <div className="flex items-center gap-2">
           {hasLiveUrl && (
             <a href={prototypeUrl} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+              <Button className="bg-[#10b981] hover:bg-[#059669] text-white">
                 <ExternalLink className="w-4 h-4 mr-2" />
                 View Live
               </Button>
