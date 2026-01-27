@@ -11,6 +11,7 @@ import { ContextTimeline } from "@/components/ContextTimeline";
 import { ExportButton } from "@/components/ExportButton";
 import { GitHubDeployButton } from "@/components/GitHubDeployButton";
 import { DeleteProjectButton } from "@/components/DeleteProjectButton";
+import { EditProjectButton } from "@/components/EditProjectButton";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -288,6 +289,9 @@ export default async function ProjectDetailPage({ params }: Props) {
               <ExportButton project={typedProject} entries={typedEntries} variant="outline" fullWidth />
             </CardContent>
           </Card>
+
+          {/* Edit */}
+          <EditProjectButton project={typedProject} isPrototype={isPrototype} />
 
           {/* Danger zone */}
           <Card className="bg-white/5 border-white/10">

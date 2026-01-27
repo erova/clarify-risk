@@ -278,13 +278,31 @@ CREATE POLICY "Users can create projects" ON projects
     AND (folder_id IS NULL OR user_can_access_folder(folder_id, auth.uid()))
   );
 
--- Project creators can update their projects
+-- Project creators and org admins can update projects
 CREATE POLICY "Creators can update projects" ON projects
-  FOR UPDATE USING (created_by = auth.uid());
+  FOR UPDATE USING (
+    created_by = auth.uid() 
+    OR (
+      folder_id IS NOT NULL 
+      AND is_org_admin(
+        (SELECT org_id FROM folders WHERE id = folder_id),
+        auth.uid()
+      )
+    )
+  );
 
--- Project creators can delete their projects
+-- Project creators and org admins can delete projects  
 CREATE POLICY "Creators can delete projects" ON projects
-  FOR DELETE USING (created_by = auth.uid());
+  FOR DELETE USING (
+    created_by = auth.uid()
+    OR (
+      folder_id IS NOT NULL 
+      AND is_org_admin(
+        (SELECT org_id FROM folders WHERE id = folder_id),
+        auth.uid()
+      )
+    )
+  );
 
 -- ----------------------------------------------------------------------------
 -- Context entries policies
