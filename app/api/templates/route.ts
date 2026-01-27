@@ -394,9 +394,9 @@ export async function GET(request: NextRequest) {
     zip.file(path, processedContent);
   }
 
-  const zipBuffer = await zip.generateAsync({ type: "uint8array" });
+  const zipBlob = await zip.generateAsync({ type: "blob" });
 
-  return new NextResponse(zipBuffer, {
+  return new Response(zipBlob, {
     headers: {
       "Content-Type": "application/zip",
       "Content-Disposition": `attachment; filename="${projectSlug}-starter.zip"`,
