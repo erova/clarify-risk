@@ -82,6 +82,64 @@ A prototype built with Proto Hub.
 
 - \`index.html\` - Main HTML file with Tailwind CSS
 - \`script.js\` - JavaScript for interactivity
+- \`CLAUDE.md\` - Context for AI assistants
+`,
+      "CLAUDE.md": `# Claude Context: {{PROJECT_NAME}}
+
+This is a prototype created through **Proto Hub** (vibesharing) - a platform for design teams to build, share, and hand off interactive prototypes.
+
+## What This Project Is
+
+This is an HTML + Tailwind CSS prototype. It's meant for rapid experimentation and visualization of UI concepts, not production code.
+
+## Project Structure
+
+\`\`\`
+├── index.html    # Main HTML file with Tailwind CSS (via CDN)
+├── script.js     # JavaScript for interactivity
+├── README.md     # Project documentation
+└── CLAUDE.md     # This file - context for AI assistants
+\`\`\`
+
+## How to Help Build This Prototype
+
+When the user asks you to help with this prototype:
+
+1. **Focus on visual fidelity** - This is a prototype, so prioritize how things look and feel over production concerns
+2. **Use Tailwind CSS** - All styling should use Tailwind utility classes (loaded via CDN)
+3. **Keep it simple** - Single HTML file with inline Tailwind is fine. Add script.js for interactivity
+4. **Dark theme by default** - The starter uses a dark slate color scheme
+5. **Be creative** - Prototypes are for exploration. Suggest improvements and alternatives
+
+## Design System
+
+The starter includes these custom Tailwind extensions:
+- \`primary\`: #3b82f6 (blue)
+- \`secondary\`: #1e293b (dark slate)
+- \`text-gradient\`: Blue to purple gradient text
+
+## When Complete
+
+When the user is happy with the prototype, they will:
+
+1. **ZIP this folder** (or let Proto Hub do it)
+2. **Upload to Proto Hub** to deploy it live
+3. **Share the link** with their team for feedback
+
+The deployed prototype will be hosted on Vercel and accessible via a unique URL.
+
+## Proto Hub Context
+
+Proto Hub tracks:
+- **Projects** - Concepts being explored (e.g., "Dashboard Redesign")
+- **Prototypes** - Individual versions by different people (e.g., "Sarah's dark mode v2")
+- **Context History** - Notes about decisions made, known issues, next steps
+
+When handing off, encourage the user to document:
+- What was built and why
+- Key decisions made
+- Known issues or limitations
+- Suggested next steps
 `,
     },
   },
@@ -202,11 +260,102 @@ A Next.js prototype built with Proto Hub.
 3. Open [http://localhost:3000](http://localhost:3000) in your browser
 4. Edit \`app/page.tsx\` to build your prototype
 
+## Files
+
+- \`app/page.tsx\` - Main page component
+- \`app/layout.tsx\` - Root layout with metadata
+- \`app/globals.css\` - Global styles and Tailwind imports
+- \`CLAUDE.md\` - Context for AI assistants
+
 ## Deployment
 
 When ready, you can either:
 - Upload this folder as a ZIP to Proto Hub
 - Push to GitHub and connect via Proto Hub
+`,
+      "CLAUDE.md": `# Claude Context: {{PROJECT_NAME}}
+
+This is a prototype created through **Proto Hub** (vibesharing) - a platform for design teams to build, share, and hand off interactive prototypes.
+
+## What This Project Is
+
+This is a Next.js + Tailwind CSS prototype. It's meant for rapid experimentation and visualization of UI concepts, not production code.
+
+## Project Structure
+
+\`\`\`
+├── app/
+│   ├── page.tsx        # Main page component - START HERE
+│   ├── layout.tsx      # Root layout with metadata
+│   └── globals.css     # Tailwind imports and global styles
+├── package.json        # Dependencies (Next.js, React, Tailwind)
+├── tailwind.config.js  # Tailwind configuration
+├── next.config.js      # Next.js config (static export enabled)
+├── README.md           # Project documentation
+└── CLAUDE.md           # This file - context for AI assistants
+\`\`\`
+
+## How to Help Build This Prototype
+
+When the user asks you to help with this prototype:
+
+1. **Focus on visual fidelity** - This is a prototype, so prioritize how things look and feel over production concerns
+2. **Use Tailwind CSS** - All styling should use Tailwind utility classes
+3. **Keep components simple** - Create new components in \`app/components/\` if needed
+4. **Dark theme by default** - The starter uses a dark slate color scheme (bg-slate-900)
+5. **Be creative** - Prototypes are for exploration. Suggest improvements and alternatives
+6. **Use React patterns** - useState, useEffect, etc. are fine for interactivity
+
+## Design System
+
+The Tailwind config includes:
+- \`primary\`: #3b82f6 (blue) - use for buttons and accents
+- Dark slate backgrounds (slate-800, slate-900)
+- Gradient text with \`bg-clip-text text-transparent bg-gradient-to-r\`
+
+## Running the Project
+
+\`\`\`bash
+npm install    # First time only
+npm run dev    # Start dev server at localhost:3000
+\`\`\`
+
+## When Complete
+
+When the user is happy with the prototype, they will:
+
+1. **ZIP this folder** (excluding node_modules)
+2. **Upload to Proto Hub** to deploy it live
+3. **Share the link** with their team for feedback
+
+The deployed prototype will be hosted on Vercel and accessible via a unique URL.
+
+## Proto Hub Context
+
+Proto Hub tracks:
+- **Projects** - Concepts being explored (e.g., "Dashboard Redesign")
+- **Prototypes** - Individual versions by different people (e.g., "Sarah's dark mode v2")
+- **Context History** - Notes about decisions made, known issues, next steps
+
+When handing off, encourage the user to document:
+- What was built and why
+- Key decisions made
+- Known issues or limitations
+- Suggested next steps
+
+## Common Tasks
+
+**Add a new page:**
+Create \`app/new-page/page.tsx\`
+
+**Add a component:**
+Create \`app/components/MyComponent.tsx\` and import it
+
+**Add interactivity:**
+Use \`"use client"\` at the top of the file, then useState/useEffect
+
+**Add an icon library:**
+Suggest lucide-react: \`npm install lucide-react\`
 `,
     },
   },
