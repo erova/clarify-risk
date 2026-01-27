@@ -144,7 +144,7 @@ export default async function FolderPage({ params }: Props) {
                 ) : (
                   <Badge variant="outline" className="border-green-500/50 text-green-400">
                     <Globe className="w-3 h-3 mr-1" />
-                    Organization
+                    Shared
                   </Badge>
                 )}
               </div>

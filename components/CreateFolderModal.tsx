@@ -194,7 +194,7 @@ export function CreateFolderModal({ orgId, parentId, parentName, onClose }: Crea
                 <Globe className={`w-5 h-5 mt-0.5 ${visibility === "org" ? "text-[#3b82f6]" : "text-gray-400"}`} />
                 <div>
                   <p className={`font-medium ${visibility === "org" ? "text-white" : "text-gray-300"}`}>
-                    Organization
+                    Shared
                   </p>
                   <p className="text-sm text-gray-500">
                     Everyone in your organization can see this folder

@@ -116,7 +116,7 @@ export default async function DashboardPage() {
                                     <Lock className="w-3 h-3" /> Restricted
                                   </span>
                                 ) : (
-                                  "Organization"
+                                  "Shared"
                                 )}
                               </p>
                             </div>
