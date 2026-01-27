@@ -50,11 +50,9 @@ export async function POST(
   const { token } = await params;
   const supabase = await createClient();
 
+  // Try to get the current user - they might be authenticated or not
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Must be logged in to accept invite" }, { status: 401 });
-  }
-
+  
   // Get the invite
   const { data: invite, error: inviteError } = await supabase
     .from("pending_invites")
@@ -74,11 +72,72 @@ export async function POST(
     return NextResponse.json({ error: "This invite has expired" }, { status: 400 });
   }
 
-  // Check if user email matches invite email
-  if (user.email?.toLowerCase() !== invite.email.toLowerCase()) {
+  // If user is authenticated, use their info
+  if (user) {
+    // Check if user email matches invite email
+    if (user.email?.toLowerCase() !== invite.email.toLowerCase()) {
+      return NextResponse.json({ 
+        error: `This invite is for ${invite.email}. Please sign up with that email address.` 
+      }, { status: 400 });
+    }
+
+    // Check if already a member
+    const { data: existingMember } = await supabase
+      .from("org_members")
+      .select("id")
+      .eq("org_id", invite.org_id)
+      .eq("user_id", user.id)
+      .single();
+
+    if (existingMember) {
+      // Mark invite as accepted anyway
+      await supabase
+        .from("pending_invites")
+        .update({ accepted_at: new Date().toISOString() })
+        .eq("id", invite.id);
+
+      return NextResponse.json({ 
+        success: true, 
+        message: "You're already a member of this organization" 
+      });
+    }
+
+    // Add user to org
+    const { error: memberError } = await supabase
+      .from("org_members")
+      .insert({
+        org_id: invite.org_id,
+        user_id: user.id,
+        role: invite.role,
+        invited_by: invite.invited_by,
+      });
+
+    if (memberError) {
+      console.error("Error adding member:", memberError);
+      return NextResponse.json({ error: "Failed to join organization" }, { status: 500 });
+    }
+
+    // Mark invite as accepted
+    await supabase
+      .from("pending_invites")
+      .update({ accepted_at: new Date().toISOString() })
+      .eq("id", invite.id);
+
+    return NextResponse.json({ success: true, orgId: invite.org_id });
+  }
+
+  // User not authenticated - try to find them by email
+  // This handles the case where signup just happened but session isn't ready
+  const { data: targetUser } = await supabase.rpc('get_user_id_by_email', {
+    user_email: invite.email.toLowerCase()
+  }).single();
+
+  if (!targetUser?.id) {
+    // User doesn't exist yet - they need to complete signup first
     return NextResponse.json({ 
-      error: `This invite is for ${invite.email}. Please sign up with that email address.` 
-    }, { status: 400 });
+      error: "Please complete signup first",
+      pending: true 
+    }, { status: 202 });
   }
 
   // Check if already a member
@@ -86,20 +145,16 @@ export async function POST(
     .from("org_members")
     .select("id")
     .eq("org_id", invite.org_id)
-    .eq("user_id", user.id)
+    .eq("user_id", targetUser.id)
     .single();
 
   if (existingMember) {
-    // Mark invite as accepted anyway
     await supabase
       .from("pending_invites")
       .update({ accepted_at: new Date().toISOString() })
       .eq("id", invite.id);
 
-    return NextResponse.json({ 
-      success: true, 
-      message: "You're already a member of this organization" 
-    });
+    return NextResponse.json({ success: true, message: "Already a member" });
   }
 
   // Add user to org
@@ -107,7 +162,7 @@ export async function POST(
     .from("org_members")
     .insert({
       org_id: invite.org_id,
-      user_id: user.id,
+      user_id: targetUser.id,
       role: invite.role,
       invited_by: invite.invited_by,
     });

@@ -89,18 +89,28 @@ function SignupForm() {
 
     // If there's an invite token, accept it
     if (inviteToken) {
-      try {
-        const acceptRes = await fetch(`/api/invite/${inviteToken}`, {
-          method: "POST",
-        });
-        const acceptData = await acceptRes.json();
-        
-        if (acceptData.error) {
-          console.error("Failed to accept invite:", acceptData.error);
-          // Don't block signup, just log the error
+      // Small delay to let the session establish
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Try to accept invite, retry once if needed
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const acceptRes = await fetch(`/api/invite/${inviteToken}`, {
+            method: "POST",
+          });
+          const acceptData = await acceptRes.json();
+          
+          if (acceptData.success) {
+            break; // Success, exit loop
+          } else if (acceptData.pending && attempt === 0) {
+            // Wait and retry
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } else if (acceptData.error) {
+            console.error("Failed to accept invite:", acceptData.error);
+          }
+        } catch (err) {
+          console.error("Error accepting invite:", err);
         }
-      } catch (err) {
-        console.error("Error accepting invite:", err);
       }
     }
 
