@@ -37,15 +37,15 @@ export async function getOrgContext(): Promise<UserOrgContext> {
     }
 
     // Extract organizations from memberships
-    const orgs = memberships
-      .map((m: { organizations: Organization }) => m.organizations as Organization)
-      .filter(Boolean);
+    const orgs: Organization[] = memberships
+      .map((m: { organizations: Organization }) => m.organizations)
+      .filter((org): org is Organization => Boolean(org));
 
     // Get current org from cookie, or default to first org
     const cookieStore = await cookies();
     const currentOrgId = cookieStore.get(CURRENT_ORG_COOKIE)?.value;
     
-    let currentOrg = orgs.find((o) => o.id === currentOrgId) || orgs[0];
+    let currentOrg = orgs.find((o: Organization) => o.id === currentOrgId) || orgs[0];
     let membership = memberships.find((m: { org_id: string }) => m.org_id === currentOrg?.id) as OrgMember | undefined;
 
     return {
