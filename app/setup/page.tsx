@@ -96,7 +96,7 @@ export default function SetupPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="mb-8">
-        <ProtoHubLogo size="lg" />
+        <ProtoHubLogo href={undefined} />
       </div>
 
       <Card className="w-full max-w-md bg-white/5 border-white/10">
