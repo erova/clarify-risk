@@ -10,6 +10,7 @@ import type { Project, ContextEntry } from "@/types";
 import { ContextTimeline } from "@/components/ContextTimeline";
 import { ExportButton } from "@/components/ExportButton";
 import { GitHubDeployButton } from "@/components/GitHubDeployButton";
+import { DeleteProjectButton } from "@/components/DeleteProjectButton";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -285,6 +286,21 @@ export default async function ProjectDetailPage({ params }: Props) {
                 Export the full context history formatted for Claude to understand where you left off.
               </p>
               <ExportButton project={typedProject} entries={typedEntries} variant="outline" fullWidth />
+            </CardContent>
+          </Card>
+
+          {/* Danger zone */}
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-base text-white">Danger Zone</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DeleteProjectButton
+                projectId={typedProject.id}
+                projectName={typedProject.name}
+                isPrototype={isPrototype}
+                redirectTo={backUrl}
+              />
             </CardContent>
           </Card>
         </div>
