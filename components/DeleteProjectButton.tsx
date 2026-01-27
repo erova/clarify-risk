@@ -39,8 +39,8 @@ export function DeleteProjectButton({
       return;
     }
 
-    router.push(redirectTo);
-    router.refresh();
+    // Hard navigation to ensure fresh data (Next.js caching can be aggressive)
+    window.location.href = redirectTo;
   };
 
   if (confirming) {
