@@ -51,14 +51,69 @@ async function fetchRepoFiles(
   const items: GitHubFile[] = await res.json();
   const files: VercelFile[] = [];
 
+  // Directories to skip
+  const skipDirs = new Set([
+    ".git",
+    "node_modules",
+    ".next",
+    ".vercel",
+    "dist",
+    "build",
+    ".cache",
+    "coverage",
+    ".turbo",
+  ]);
+
+  // Files to skip
+  const skipFiles = new Set([
+    ".env",
+    ".env.local",
+    ".env.production",
+    ".DS_Store",
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+  ]);
+
+  // File extensions to skip (binary/large files)
+  const skipExtensions = new Set([
+    ".zip",
+    ".tar",
+    ".gz",
+    ".rar",
+    ".7z",
+    ".exe",
+    ".dll",
+    ".so",
+    ".dylib",
+    ".mp4",
+    ".mov",
+    ".avi",
+    ".mkv",
+    ".mp3",
+    ".wav",
+    ".psd",
+    ".ai",
+    ".sketch",
+    ".fig",
+  ]);
+
   for (const item of items) {
-    // Skip common non-essential files/folders
-    if (
-      item.name === ".git" ||
-      item.name === "node_modules" ||
-      item.name === ".env" ||
-      item.name === ".env.local"
-    ) {
+    // Skip directories we don't need
+    if (item.type === "dir" && skipDirs.has(item.name)) {
+      continue;
+    }
+
+    // Skip files we don't need
+    if (item.type === "file" && skipFiles.has(item.name)) {
+      continue;
+    }
+
+    // Skip large binary file types
+    const ext = item.name.includes(".") 
+      ? "." + item.name.split(".").pop()?.toLowerCase() 
+      : "";
+    if (skipExtensions.has(ext)) {
       continue;
     }
 
@@ -77,6 +132,13 @@ async function fetchRepoFiles(
       const fileRes = await fetch(item.download_url, { headers: fileHeaders });
       if (fileRes.ok) {
         const content = await fileRes.arrayBuffer();
+        
+        // Skip files larger than 1MB
+        if (content.byteLength > 1024 * 1024) {
+          console.log(`Skipping large file: ${item.path} (${content.byteLength} bytes)`);
+          continue;
+        }
+        
         const base64 = Buffer.from(content).toString("base64");
         files.push({
           file: item.path,
@@ -190,7 +252,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`Found ${files.length} files, deploying to Vercel...`);
+    // Check total size (Vercel limit is ~10MB for the request body)
+    const totalSize = files.reduce((sum, f) => sum + f.data.length, 0);
+    const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+    console.log(`Found ${files.length} files, total size: ${totalSizeMB}MB`);
+
+    if (totalSize > 8 * 1024 * 1024) { // 8MB to leave room for JSON overhead
+      return NextResponse.json(
+        { error: `Repository is too large (${totalSizeMB}MB). Max is ~8MB. Try a smaller repo or one without large assets.` },
+        { status: 400 }
+      );
+    }
+
+    console.log(`Deploying to Vercel...`);
 
     // Deploy to Vercel
     const deployment = await deployToVercel(uniqueName, files, vercelToken);
