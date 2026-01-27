@@ -9,6 +9,7 @@ import { ArrowLeft, ExternalLink, Plus, Layers, GitFork } from "lucide-react";
 import type { Project, ContextEntry } from "@/types";
 import { ContextTimeline } from "@/components/ContextTimeline";
 import { ExportButton } from "@/components/ExportButton";
+import { GitHubDeployButton } from "@/components/GitHubDeployButton";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -256,6 +257,24 @@ export default async function ProjectDetailPage({ params }: Props) {
               </div>
             </CardContent>
           </Card>
+
+          {/* Deploy section - only for prototypes without a URL */}
+          {isPrototype && !isExternal && (
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-base text-white">Deploy</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-400 mb-4">
+                  Deploy this prototype to make it live and shareable.
+                </p>
+                <GitHubDeployButton
+                  prototypeId={typedProject.id}
+                  prototypeName={typedProject.name}
+                />
+              </CardContent>
+            </Card>
+          )}
 
           <Card className="bg-white/5 border-white/10">
             <CardHeader>
