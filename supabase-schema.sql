@@ -32,6 +32,23 @@ CREATE TABLE org_members (
 CREATE INDEX idx_org_members_org ON org_members(org_id);
 CREATE INDEX idx_org_members_user ON org_members(user_id);
 
+-- Pending invites (for users who don't have accounts yet)
+CREATE TABLE pending_invites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('admin', 'member')),
+  token TEXT UNIQUE NOT NULL,
+  invited_by UUID REFERENCES auth.users(id),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
+  accepted_at TIMESTAMPTZ,
+  UNIQUE(org_id, email)
+);
+
+CREATE INDEX idx_pending_invites_token ON pending_invites(token);
+CREATE INDEX idx_pending_invites_email ON pending_invites(email);
+
 -- ============================================================================
 -- FOLDERS & ACCESS CONTROL
 -- ============================================================================
@@ -159,6 +176,35 @@ CREATE POLICY "Admins can add members" ON org_members
 CREATE POLICY "Admins can remove members" ON org_members
   FOR DELETE USING (
     EXISTS (SELECT 1 FROM org_members AS om WHERE om.org_id = org_members.org_id AND om.user_id = auth.uid() AND om.role = 'admin')
+  );
+
+-- ----------------------------------------------------------------------------
+-- Pending invites policies
+-- ----------------------------------------------------------------------------
+
+-- Enable RLS
+ALTER TABLE pending_invites ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can read invites by token (for the signup flow)
+CREATE POLICY "Anyone can read invites by token" ON pending_invites
+  FOR SELECT USING (true);
+
+-- Org admins can create invites
+CREATE POLICY "Admins can create invites" ON pending_invites
+  FOR INSERT WITH CHECK (
+    is_org_admin(org_id, auth.uid())
+  );
+
+-- Invites can be updated (to mark as accepted) by the invited user
+CREATE POLICY "Users can accept their invites" ON pending_invites
+  FOR UPDATE USING (
+    email = (SELECT email FROM auth.users WHERE id = auth.uid())
+  );
+
+-- Org admins can delete invites
+CREATE POLICY "Admins can delete invites" ON pending_invites
+  FOR DELETE USING (
+    is_org_admin(org_id, auth.uid())
   );
 
 -- ----------------------------------------------------------------------------

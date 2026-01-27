@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import crypto from "crypto";
+
+function generateToken(): string {
+  return crypto.randomBytes(32).toString("hex");
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { orgId, email } = await request.json();
+    const { orgId, email, role = "member" } = await request.json();
 
     if (!orgId || !email) {
       return NextResponse.json({ error: "Organization ID and email required" }, { status: 400 });
@@ -28,97 +33,102 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Only admins can invite members" }, { status: 403 });
     }
 
-    // Find the user by email using Supabase admin API
-    // Note: This requires the user to already have an account
-    // In a production app, you might want to send email invitations instead
-    const { data: users, error: userError } = await supabase
-      .from("auth.users")
-      .select("id")
-      .eq("email", email);
-
-    // Try alternative approach - use RPC or check if user exists through their profile
-    // For now, we'll use a workaround with the auth.users view if available
-    // or fall back to checking the org_members table for the email
-
-    // Since we can't directly query auth.users from the client, 
-    // we'll need to use a different approach. Let's try to look up the user
-    // by checking existing org_members across all orgs (if they exist anywhere)
-    
-    // Alternative: Accept the user ID directly or use Supabase Auth Admin API
-    // For this implementation, we'll check if the email matches any existing user
-    // by attempting to add them and catching the foreign key error
-
-    // First, let's try to find if this user already exists in any org
-    const { data: existingMembership } = await supabase
-      .from("org_members")
-      .select("user_id")
-      .limit(1);
-
-    // We need to use a service role or admin API to look up users by email
-    // For now, let's assume the user provides a valid user_id
-    // or we use a database function
-
-    // Workaround: Use the RPC function if available, or just try to insert
-    // and let the foreign key constraint tell us if the user doesn't exist
-
-    // For this MVP, we'll use a simpler approach:
-    // 1. Admin enters an email
-    // 2. We try to find the user via a join or RPC
-    // 3. If not found, return an error
-
-    // Since we can't easily query auth.users, let's create a workaround
-    // by having users "claim" their invitation when they log in
-
-    // SIMPLE APPROACH: Use Supabase's auth.users() if we have service role
-    // For now, we'll return an error asking for the user ID instead
-    
-    // Actually, let's use a more practical approach:
-    // Query the auth schema if accessible (might need service role)
-    
-    const { data: authUser, error: authError } = await supabase.rpc('get_user_id_by_email', {
-      user_email: email
-    }).single();
-
-    let targetUserId: string;
-
-    if (authError || !authUser) {
-      // RPC doesn't exist or user not found
-      // For now, return a helpful error
-      return NextResponse.json({ 
-        error: "User not found. They must create an account first, then you can invite them." 
-      }, { status: 404 });
-    }
-
-    targetUserId = authUser.id;
-
-    // Check if user is already a member
-    const { data: existingMember } = await supabase
-      .from("org_members")
-      .select("id")
-      .eq("org_id", orgId)
-      .eq("user_id", targetUserId)
+    // Get org info for the response
+    const { data: org } = await supabase
+      .from("organizations")
+      .select("name")
+      .eq("id", orgId)
       .single();
 
-    if (existingMember) {
-      return NextResponse.json({ error: "User is already a member of this organization" }, { status: 400 });
-    }
+    // Try to find the user by email using our RPC function
+    const { data: authUser } = await supabase.rpc('get_user_id_by_email', {
+      user_email: email.toLowerCase()
+    }).single();
 
-    // Add the member
-    const { error: insertError } = await supabase
-      .from("org_members")
-      .insert({
-        org_id: orgId,
-        user_id: targetUserId,
-        role: "member",
-        invited_by: user.id,
+    if (authUser?.id) {
+      // User exists - add them directly
+      const targetUserId = authUser.id;
+
+      // Check if user is already a member
+      const { data: existingMember } = await supabase
+        .from("org_members")
+        .select("id")
+        .eq("org_id", orgId)
+        .eq("user_id", targetUserId)
+        .single();
+
+      if (existingMember) {
+        return NextResponse.json({ error: "User is already a member of this organization" }, { status: 400 });
+      }
+
+      // Add the member
+      const { error: insertError } = await supabase
+        .from("org_members")
+        .insert({
+          org_id: orgId,
+          user_id: targetUserId,
+          role: role,
+          invited_by: user.id,
+        });
+
+      if (insertError) {
+        console.error("Error adding member:", insertError);
+        return NextResponse.json({ error: insertError.message }, { status: 500 });
+      }
+
+      return NextResponse.json({ 
+        success: true, 
+        type: "added",
+        message: `${email} has been added to ${org?.name || "the organization"}`
       });
-
-    if (insertError) {
-      console.error("Error adding member:", insertError);
-      return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true });
+    // User doesn't exist - create a pending invite
+    // First check if there's already a pending invite
+    const { data: existingInvite } = await supabase
+      .from("pending_invites")
+      .select("id, token")
+      .eq("org_id", orgId)
+      .eq("email", email.toLowerCase())
+      .is("accepted_at", null)
+      .single();
+
+    let inviteToken: string;
+
+    if (existingInvite) {
+      // Use existing invite token
+      inviteToken = existingInvite.token;
+    } else {
+      // Create new pending invite
+      inviteToken = generateToken();
+      
+      const { error: inviteError } = await supabase
+        .from("pending_invites")
+        .insert({
+          org_id: orgId,
+          email: email.toLowerCase(),
+          role: role,
+          token: inviteToken,
+          invited_by: user.id,
+        });
+
+      if (inviteError) {
+        console.error("Error creating invite:", inviteError);
+        return NextResponse.json({ error: inviteError.message }, { status: 500 });
+      }
+    }
+
+    // Generate the invite URL
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.headers.get("origin") || "";
+    const inviteUrl = `${baseUrl}/signup?invite=${inviteToken}`;
+
+    return NextResponse.json({ 
+      success: true, 
+      type: "invited",
+      message: `Invitation created for ${email}`,
+      inviteUrl,
+      orgName: org?.name,
+    });
   } catch (error) {
     console.error("Error inviting member:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

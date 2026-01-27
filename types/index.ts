@@ -32,6 +32,22 @@ export interface OrganizationWithMembers extends Organization {
   org_members: OrgMember[];
 }
 
+export interface PendingInvite {
+  id: string;
+  org_id: string;
+  email: string;
+  role: OrgRole;
+  token: string;
+  invited_by: string | null;
+  created_at: string;
+  expires_at: string;
+  accepted_at: string | null;
+}
+
+export interface PendingInviteWithOrg extends PendingInvite {
+  organization: Organization;
+}
+
 // ============================================================================
 // FOLDERS
 // ============================================================================
