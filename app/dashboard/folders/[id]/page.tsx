@@ -95,6 +95,9 @@ export default async function FolderPage({ params }: Props) {
     }
   }
 
+  // Build folder path string for display (e.g., "/hero-use-cases")
+  const folderPath = "/" + [...breadcrumbs, typedFolder].map(f => f.slug).join("/");
+
   return (
     <div className="flex gap-6">
       {/* Sidebar */}
@@ -234,8 +237,8 @@ export default async function FolderPage({ params }: Props) {
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between text-sm text-gray-500">
-                        <span>/{project.slug}</span>
-                        <span>
+                        <span className="truncate">{folderPath}/{project.slug}</span>
+                        <span className="flex-shrink-0 ml-2">
                           {new Date(project.updated_at).toLocaleDateString()}
                         </span>
                       </div>
