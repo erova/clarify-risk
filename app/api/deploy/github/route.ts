@@ -14,11 +14,12 @@ interface VercelFile {
   data: string; // base64 encoded
 }
 
-// Recursively fetch all files from a GitHub repo
+// Recursively fetch all files from a GitHub repo (or subdirectory)
 async function fetchRepoFiles(
   owner: string,
   repo: string,
-  path: string = ""
+  path: string = "",
+  basePath: string = "" // The root path to strip from file paths
 ): Promise<VercelFile[]> {
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
   
@@ -119,7 +120,7 @@ async function fetchRepoFiles(
 
     if (item.type === "dir") {
       // Recursively get files from subdirectory
-      const subFiles = await fetchRepoFiles(owner, repo, item.path);
+      const subFiles = await fetchRepoFiles(owner, repo, item.path, basePath);
       files.push(...subFiles);
     } else if (item.type === "file" && item.download_url) {
       // Fetch file content
@@ -140,8 +141,18 @@ async function fetchRepoFiles(
         }
         
         const base64 = Buffer.from(content).toString("base64");
+        
+        // Strip the base path from the file path so it's relative to the subdirectory
+        let filePath = item.path;
+        if (basePath && filePath.startsWith(basePath)) {
+          filePath = filePath.substring(basePath.length);
+          if (filePath.startsWith("/")) {
+            filePath = filePath.substring(1);
+          }
+        }
+        
         files.push({
-          file: item.path,
+          file: filePath,
           data: base64,
         });
       }
@@ -211,17 +222,31 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Parse GitHub URL to get owner/repo
-  const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/\?#]+)/);
-  if (!match) {
+  // Parse GitHub URL to get owner/repo and optional subdirectory path
+  // Supports:
+  //   https://github.com/owner/repo
+  //   https://github.com/owner/repo/tree/branch/path/to/folder
+  const repoMatch = repoUrl.match(/github\.com\/([^\/]+)\/([^\/\?#]+)/);
+  if (!repoMatch) {
     return NextResponse.json(
       { error: "Invalid GitHub URL. Expected format: https://github.com/owner/repo" },
       { status: 400 }
     );
   }
 
-  const [, owner, repo] = match;
-  const cleanRepo = repo.replace(/\.git$/, "");
+  const [, owner, repoRaw] = repoMatch;
+  const cleanRepo = repoRaw.replace(/\.git$/, "");
+
+  // Check for subdirectory path (format: /tree/branch/path/to/folder)
+  let subPath = "";
+  const pathMatch = repoUrl.match(/\/tree\/[^\/]+\/(.+)$/);
+  if (pathMatch) {
+    subPath = pathMatch[1];
+    // Remove trailing slash if present
+    if (subPath.endsWith("/")) {
+      subPath = subPath.slice(0, -1);
+    }
+  }
 
   const vercelToken = process.env.VERCEL_TOKEN;
   if (!vercelToken) {
@@ -241,9 +266,10 @@ export async function POST(request: NextRequest) {
 
     const uniqueName = `proto-${projectSlug}-${Date.now().toString(36)}`;
 
-    // Fetch all files from the GitHub repo
-    console.log(`Fetching files from ${owner}/${cleanRepo}...`);
-    const files = await fetchRepoFiles(owner, cleanRepo);
+    // Fetch all files from the GitHub repo (or subdirectory)
+    const pathDesc = subPath ? `${owner}/${cleanRepo}/${subPath}` : `${owner}/${cleanRepo}`;
+    console.log(`Fetching files from ${pathDesc}...`);
+    const files = await fetchRepoFiles(owner, cleanRepo, subPath, subPath);
 
     if (files.length === 0) {
       return NextResponse.json(
