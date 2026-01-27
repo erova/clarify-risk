@@ -394,7 +394,7 @@ export async function GET(request: NextRequest) {
     zip.file(path, processedContent);
   }
 
-  const zipBuffer = await zip.generateAsync({ type: "nodebuffer" });
+  const zipBuffer = await zip.generateAsync({ type: "uint8array" });
 
   return new NextResponse(zipBuffer, {
     headers: {
