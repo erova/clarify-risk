@@ -38,7 +38,7 @@ export async function getOrgContext(): Promise<UserOrgContext> {
 
     // Extract organizations from memberships
     const orgs = memberships
-      .map((m) => m.organizations as Organization)
+      .map((m: { organizations: Organization }) => m.organizations as Organization)
       .filter(Boolean);
 
     // Get current org from cookie, or default to first org
@@ -46,7 +46,7 @@ export async function getOrgContext(): Promise<UserOrgContext> {
     const currentOrgId = cookieStore.get(CURRENT_ORG_COOKIE)?.value;
     
     let currentOrg = orgs.find((o) => o.id === currentOrgId) || orgs[0];
-    let membership = memberships.find((m) => m.org_id === currentOrg?.id) as OrgMember | undefined;
+    let membership = memberships.find((m: { org_id: string }) => m.org_id === currentOrg?.id) as OrgMember | undefined;
 
     return {
       currentOrg: currentOrg || null,
