@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ProtoHubLogo } from "@/components/ProtoHubLogo";
+import { OrgSwitcher } from "@/components/OrgSwitcher";
+import { getOrgContext } from "@/lib/org-context";
+import { Settings } from "lucide-react";
 
 export default async function DashboardLayout({
   children,
@@ -16,6 +19,9 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
+  // Get organization context
+  const { currentOrg, orgs, membership } = await getOrgContext();
+
   return (
     <div className="min-h-screen relative">
       {/* Header */}
@@ -23,6 +29,14 @@ export default async function DashboardLayout({
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <ProtoHubLogo href="/dashboard" />
+            
+            {/* Org Switcher */}
+            <OrgSwitcher 
+              currentOrg={currentOrg} 
+              orgs={orgs} 
+              userRole={membership?.role || null}
+            />
+            
             <nav className="flex items-center gap-4">
               <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white transition-colors">
                 Projects
@@ -36,6 +50,17 @@ export default async function DashboardLayout({
             </nav>
           </div>
           <div className="flex items-center gap-3">
+            {currentOrg && membership?.role === "admin" && (
+              <Link href="/dashboard/settings">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-gray-400 hover:text-white hover:bg-white/10"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </Link>
+            )}
             <span className="text-sm text-gray-500">{user.email}</span>
             <form action="/api/auth/signout" method="POST">
               <Button 

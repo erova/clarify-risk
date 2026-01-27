@@ -1,5 +1,78 @@
+// ============================================================================
+// ORGANIZATIONS
+// ============================================================================
+
+export interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type OrgRole = 'admin' | 'member';
+
+export interface OrgMember {
+  id: string;
+  org_id: string;
+  user_id: string;
+  role: OrgRole;
+  invited_by: string | null;
+  created_at: string;
+}
+
+export interface OrgMemberWithUser extends OrgMember {
+  user: {
+    id: string;
+    email: string;
+  };
+}
+
+export interface OrganizationWithMembers extends Organization {
+  org_members: OrgMember[];
+}
+
+// ============================================================================
+// FOLDERS
+// ============================================================================
+
+export type FolderVisibility = 'org' | 'restricted';
+
+export interface Folder {
+  id: string;
+  org_id: string;
+  parent_id: string | null;
+  name: string;
+  slug: string;
+  visibility: FolderVisibility;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FolderAccess {
+  id: string;
+  folder_id: string;
+  user_id: string;
+  granted_by: string | null;
+  created_at: string;
+}
+
+export interface FolderWithChildren extends Folder {
+  children: FolderWithChildren[];
+}
+
+export interface FolderWithAccess extends Folder {
+  folder_access: FolderAccess[];
+}
+
+// ============================================================================
+// PROJECTS
+// ============================================================================
+
 export interface Project {
   id: string;
+  folder_id: string | null;
   name: string;
   slug: string;
   description: string | null;
@@ -25,4 +98,18 @@ export interface ContextEntry {
 
 export interface ProjectWithEntries extends Project {
   context_entries: ContextEntry[];
+}
+
+export interface ProjectWithFolder extends Project {
+  folder: Folder | null;
+}
+
+// ============================================================================
+// USER CONTEXT
+// ============================================================================
+
+export interface UserOrgContext {
+  currentOrg: Organization | null;
+  orgs: Organization[];
+  membership: OrgMember | null;
 }
