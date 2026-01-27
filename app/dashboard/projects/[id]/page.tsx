@@ -12,6 +12,8 @@ import { ExportButton } from "@/components/ExportButton";
 import { GitHubDeployButton } from "@/components/GitHubDeployButton";
 import { DeleteProjectButton } from "@/components/DeleteProjectButton";
 import { EditProjectButton } from "@/components/EditProjectButton";
+import { DownloadTemplateButton } from "@/components/DownloadTemplateButton";
+import { ZipUploadButton } from "@/components/ZipUploadButton";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -260,20 +262,34 @@ export default async function ProjectDetailPage({ params }: Props) {
             </CardContent>
           </Card>
 
-          {/* Deploy section - only for prototypes without a URL */}
+          {/* Build & Deploy section - only for prototypes without a URL */}
           {isPrototype && !isExternal && (
             <Card className="bg-white/5 border-white/10">
               <CardHeader>
-                <CardTitle className="text-base text-white">Deploy</CardTitle>
+                <CardTitle className="text-base text-white">Build & Deploy</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-400 mb-4">
-                  Deploy this prototype to make it live and shareable.
-                </p>
-                <GitHubDeployButton
-                  prototypeId={typedProject.id}
-                  prototypeName={typedProject.name}
-                />
+              <CardContent className="space-y-4">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Start Building</p>
+                  <DownloadTemplateButton
+                    projectName={typedProject.name}
+                    projectSlug={typedProject.slug}
+                  />
+                </div>
+                
+                <div className="border-t border-white/10 pt-4">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Deploy</p>
+                  <div className="space-y-2">
+                    <ZipUploadButton
+                      prototypeId={typedProject.id}
+                      prototypeName={typedProject.name}
+                    />
+                    <GitHubDeployButton
+                      prototypeId={typedProject.id}
+                      prototypeName={typedProject.name}
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}
