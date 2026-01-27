@@ -80,9 +80,17 @@ export default async function SettingsPage() {
 
           {/* Members List */}
           <div className="border-t border-white/10 pt-4 space-y-2">
-            {members?.map((member) => {
-              const memberUser = member.user as { id: string; email: string } | null;
-              const inviter = member.inviter as { id: string; email: string } | null;
+            {members?.map((member: {
+              id: string;
+              org_id: string;
+              user_id: string;
+              role: string;
+              created_at: string;
+              user: { id: string; email: string } | null;
+              inviter: { id: string; email: string } | null;
+            }) => {
+              const memberUser = member.user;
+              const inviter = member.inviter;
               const isCurrentUser = member.user_id === user.id;
 
               return (
